@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>DotUninstall</RootNamespace>
+    <AssemblyName>DotUninstall</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <PublishAot>true</PublishAot>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aprillz.MewUI" Version="0.13.3" />
+    <PackageReference Include="NuGet.Versioning" Version="7.0.0" />
+    <PackageReference Include="Octokit" Version="14.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MetadataSnapshot\**\*.json" />
+    <None Remove="MetadataSnapshot\10_0.json" />
+    <None Remove="MetadataSnapshot\11_0.json" />
+    <None Remove="MetadataSnapshot\1_0.json" />
+    <None Remove="MetadataSnapshot\1_1.json" />
+    <None Remove="MetadataSnapshot\2_0.json" />
+    <None Remove="MetadataSnapshot\2_1.json" />
+    <None Remove="MetadataSnapshot\2_2.json" />
+    <None Remove="MetadataSnapshot\3_0.json" />
+    <None Remove="MetadataSnapshot\3_1.json" />
+    <None Remove="MetadataSnapshot\5_0.json" />
+    <None Remove="MetadataSnapshot\6_0.json" />
+    <None Remove="MetadataSnapshot\7_0.json" />
+    <None Remove="MetadataSnapshot\8_0.json" />
+    <None Remove="MetadataSnapshot\9_0.json" />
+    <None Remove="MetadataSnapshot\maui-lifecycle.json" />
+    <None Remove="MetadataSnapshot\releases-index.json" />
+    <Content Include="Assets\app.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+ 
+
+</Project>

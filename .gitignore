@@ -1,0 +1,15 @@
+## Build outputs
+**/bin/
+**/obj/
+
+## Publish / artifacts
+.artifacts/
+
+## Benchmark artifacts (if generated elsewhere)
+metrics*.log
+bench_report*.md
+
+## User-specific
+*.csproj.user
+build/MewUI.Local.props
+
