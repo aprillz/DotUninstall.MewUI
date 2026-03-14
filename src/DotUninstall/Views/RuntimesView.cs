@@ -13,7 +13,6 @@ public class RuntimesView : UserControl
     public RuntimesView(MainViewModel vm)
     {
         _vm = vm;
-
         Build();
     }
 

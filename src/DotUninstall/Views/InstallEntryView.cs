@@ -18,7 +18,6 @@ public class InstallEntryView : UserControl
     public InstallEntryView(MainViewModel vm)
     {
         _vm = vm;
-
         Build();
     }
 

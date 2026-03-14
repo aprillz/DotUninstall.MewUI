@@ -9,28 +9,33 @@ namespace DotUninstall;
 
 public class ChannelGroupView : UserControl
 {
-    private readonly MainViewModel _vm;
-    private readonly Label _channelLabel;
-    private readonly WrapPanel _channelBadges;
-    private readonly ItemsControl _entriesControl;
+    private MainViewModel _vm = null!;
+    private Label _channelLabel = null!;
+    private WrapPanel _channelBadges = null!;
+    private ItemsControl _entriesControl = null!;
 
     public ChannelGroupView(MainViewModel vm)
     {
         _vm = vm;
+        Build();
+    }
+
+    protected override Element? OnBuild()
+    {
         _channelLabel = new Label().FontSize(20).Bold();
         _channelBadges = new WrapPanel().Margin(0, 6, 0, 4).Spacing(8);
 
         _entriesControl = new ItemsControl()
-            .CornerRadius(0)
-            .BorderThickness(0)
-            .Background(Color.Transparent)
-            .StackPresenter()
-            .ItemTemplate(new DelegateTemplate<DotnetInstallEntry>(
-                build: _ => new InstallEntryView(vm),
-                bind: (view, entry, _, _) => ((InstallEntryView)view).Update(entry)
-            ));
+                .CornerRadius(0)
+                .BorderThickness(0)
+                .Background(Color.Transparent)
+                .StackPresenter()
+                .ItemTemplate(new DelegateTemplate<DotnetInstallEntry>(
+                    build: _ => new InstallEntryView(_vm),
+                    bind: (view, entry, _, _) => ((InstallEntryView)view).Update(entry)
+                ));
 
-        Content = new Expander()
+        return new Expander()
             .Margin(8, 0, 8, 12)
             .Padding(8, 4)
             .IsExpanded(true)
