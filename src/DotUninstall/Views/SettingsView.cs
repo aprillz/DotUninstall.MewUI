@@ -8,7 +8,7 @@ namespace DotUninstall;
 public class SettingsView : UserControl
 {
     public SettingsView(MainViewModel vm) =>
-        new StackPanel()
+        Content = new StackPanel()
             .Vertical()
             .Padding(12)
             .Spacing(16)

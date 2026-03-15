@@ -9,12 +9,13 @@ namespace DotUninstall;
 public class SdksView : UserControl
 {
     public SdksView(MainViewModel vm) =>
-        new DockPanel()
+        Content =new DockPanel()
             .Children(
                 new Label()
                     .Margin(12, 0, 12, 8)
                     .WithTheme((t, c) => c.Foreground(t.Palette.DisabledText))
                     .BindText(vm.SdkCount, c => $"Count: {c}").DockTop(),
+
                 new ItemsControl()
                     .CornerRadius(0)
                     .BorderThickness(0)
