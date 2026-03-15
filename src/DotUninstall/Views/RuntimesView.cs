@@ -8,30 +8,22 @@ namespace DotUninstall;
 
 public class RuntimesView : UserControl
 {
-    private readonly MainViewModel _vm;
-
-    public RuntimesView(MainViewModel vm)
-    {
-        _vm = vm;
-        Build();
-    }
-
-    protected override Element? OnBuild() =>
-        new DockPanel()
+    public RuntimesView(MainViewModel vm) =>
+        Content = new DockPanel()
             .Children(
                 new Label()
                     .Margin(12, 0, 12, 8)
                     .WithTheme((t, c) => c.Foreground(t.Palette.DisabledText))
-                    .BindText(_vm.RuntimeCount, c => $"Count: {c}").DockTop(),
+                    .BindText(vm.RuntimeCount, c => $"Count: {c}").DockTop(),
 
                 new ItemsControl()
                     .CornerRadius(0)
                     .BorderThickness(0)
                     .Background(Color.Transparent)
                     .StackPresenter()
-                    .ItemsSource(ItemsView.Create(_vm.GroupedRuntimeItems, x => x.Channel))
+                    .ItemsSource(ItemsView.Create(vm.GroupedRuntimeItems, x => x.Channel))
                     .ItemTemplate(new DelegateTemplate<ChannelGroup>(
-                        build: _ => new ChannelGroupView(_vm),
+                        build: _ => new ChannelGroupView(vm),
                         bind: (view, group, _, _) => ((ChannelGroupView)view).Update(group)
                     ))
             );

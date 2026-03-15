@@ -7,14 +7,7 @@ namespace DotUninstall;
 
 public class SettingsView : UserControl
 {
-    private readonly MainViewModel _vm;
-    public SettingsView(MainViewModel vm)
-    {
-        _vm = vm;
-        Build();
-    }
-
-    protected override Element? OnBuild() =>
+    public SettingsView(MainViewModel vm) =>
         new StackPanel()
             .Vertical()
             .Padding(12)
@@ -31,12 +24,12 @@ public class SettingsView : UserControl
                     .CenterVertical()
                     .Children(
                         new Label().Text("Version:").Bold(),
-                        new Label().Text(_vm.AppVersion)
+                        new Label().Text(vm.AppVersion)
                     ),
 
                 new ToggleSwitch()
                     .Text("Use .NET metadata extras")
-                    .BindIsChecked(_vm.ShowDotNetMetadata),
+                    .BindIsChecked(vm.ShowDotNetMetadata),
 
                 new StackPanel()
                     .Vertical()
@@ -47,7 +40,7 @@ public class SettingsView : UserControl
                             .Left()
                             .Width(120)
                             .Items("System", "Light", "Dark")
-                            .BindSelectedIndex(_vm.ThemeModeIndex),
+                            .BindSelectedIndex(vm.ThemeModeIndex),
                         new Label()
                             .Text("Theme changes apply immediately.")
                             .WithTheme((t, c) => c.Foreground(t.Palette.DisabledText))
@@ -60,15 +53,15 @@ public class SettingsView : UserControl
                 new Button()
                     .Content("Check for Updates Now")
                     .Left()
-                    .OnClick(() => _ = _vm.ForceCheckForUpdatesAsync()),
+                    .OnClick(() => _ = vm.ForceCheckForUpdatesAsync()),
 
                 new Button()
                     .Content("Clear Metadata Cache")
                     .Left()
-                    .OnClick(() => _ = _vm.ClearCacheAsync()),
+                    .OnClick(() => _ = vm.ClearCacheAsync()),
 
                 new Label()
-                    .BindText(_vm.UpdateMessage, m => m ?? "")
+                    .BindText(vm.UpdateMessage, m => m ?? "")
                     .TextWrapping(TextWrapping.Wrap),
 
                 new Label()

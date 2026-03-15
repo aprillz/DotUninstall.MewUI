@@ -14,7 +14,7 @@ if (OperatingSystem.IsWindows())
     Win32Platform.Register();
     Direct2DBackend.Register();
 }
-else if (OperatingSystem.IsMacOS()) 
+else if (OperatingSystem.IsMacOS())
 {
     MacOSPlatform.Register();
     MewVGMacOSBackend.Register();
@@ -35,10 +35,10 @@ Application.Create()
             {
                 vm.ApplyCurrentTheme();
                 vm.WindowService.SetOwner(x);
-                _ = vm.RefreshAsync();
                 _ = Task.Run(vm.CheckForUpdatesAsync);
                 vm.DetectElevation();
             })
+            .OnFirstFrameRendered(() => _ = vm.RefreshAsync())
             .Title("DotUninstall")
             .Padding(8)
             .Content(new MainView(vm))

@@ -42,10 +42,21 @@ public partial record DotnetInstallEntry
     {
         get
         {
-            if (IsGa) return "GA";
-            if (string.IsNullOrEmpty(PreviewKindDisplay)) return null;
+            if (IsGa)
+            {
+                return "GA";
+            }
+
+            if (string.IsNullOrEmpty(PreviewKindDisplay))
+            {
+                return null;
+            }
+
             if (PreviewNumber is int n and > 0)
+            {
                 return $"{PreviewKindDisplay} {n}";
+            }
+
             return PreviewKindDisplay;
         }
     }

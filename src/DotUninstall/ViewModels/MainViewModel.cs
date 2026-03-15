@@ -2,8 +2,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 using Aprillz.MewUI;
@@ -12,8 +10,6 @@ using DotUninstall.Models;
 using DotUninstall.Services;
 
 using NuGet.Versioning;
-
-using Octokit;
 
 using Application = Aprillz.MewUI.Application;
 
@@ -94,7 +90,9 @@ public partial class MainViewModel
                 _ => "System"
             };
             if (ThemeMode.Value != mode)
+            {
                 ThemeMode.Value = mode;
+            }
         };
 
         ThemeMode.Changed += () =>
@@ -107,7 +105,10 @@ public partial class MainViewModel
             }
             var idx = ThemeModeToIndex(normalized);
             if (ThemeModeIndex.Value != idx)
+            {
                 ThemeModeIndex.Value = idx;
+            }
+
             PersistUiSettings();
             ApplyTheme(ThemeMode.Value);
         };
@@ -131,7 +132,10 @@ public partial class MainViewModel
 
     public async Task RefreshAsync()
     {
-        if (IsLoading.Value) return;
+        if (IsLoading.Value)
+        {
+            return;
+        }
 
         IsLoading.Value = true;
         ErrorMessage.Value = null;
@@ -241,7 +245,9 @@ public partial class MainViewModel
             try
             {
                 if (neededChannels.Count > 0)
+                {
                     await EnsureMetadataAsync(neededChannels);
+                }
             }
             catch (Exception ex)
             {
@@ -301,9 +307,13 @@ public partial class MainViewModel
             }
 
             if (finalEntry.Type == "sdk")
+            {
                 _sdkItems.Add(finalEntry);
+            }
             else
+            {
                 _runtimeItems.Add(finalEntry);
+            }
         }
     }
 
@@ -313,11 +323,23 @@ public partial class MainViewModel
     {
         static (int major, int minor) ParseChannel(string? channel)
         {
-            if (string.IsNullOrWhiteSpace(channel)) return (-1, -1);
+            if (string.IsNullOrWhiteSpace(channel))
+            {
+                return (-1, -1);
+            }
+
             var parts = channel.Split('.', StringSplitOptions.RemoveEmptyEntries);
             int major = -1, minor = -1;
-            if (parts.Length > 0) int.TryParse(parts[0], out major);
-            if (parts.Length > 1) int.TryParse(parts[1], out minor);
+            if (parts.Length > 0)
+            {
+                int.TryParse(parts[0], out major);
+            }
+
+            if (parts.Length > 1)
+            {
+                int.TryParse(parts[1], out minor);
+            }
+
             return (major, minor);
         }
         IOrderedEnumerable<IGrouping<string?, DotnetInstallEntry>> OrderGroups(IEnumerable<IGrouping<string?, DotnetInstallEntry>> groups)
@@ -337,11 +359,16 @@ public partial class MainViewModel
 
                 ChannelResolved? cr = null;
                 if (IsMetadataEnabledInSession.Value)
+                {
                     _channelCache?.TryGetValue(grp.Key!, out cr);
+                }
 
                 DateTime? mauiEol = null;
                 EnsureMauiLifecycleLoaded();
-                if (_mauiLifecycle != null && grp.Key != null && _mauiLifecycle.TryGetValue(grp.Key, out var mdt)) mauiEol = mdt;
+                if (_mauiLifecycle != null && grp.Key != null && _mauiLifecycle.TryGetValue(grp.Key, out var mdt))
+                {
+                    mauiEol = mdt;
+                }
 
                 bool latestIsSec = cr?.LatestSecuritySdk != null && cr.LatestSdk == cr.LatestSecuritySdk;
                 GroupedSdkItems.Add(new ChannelGroup(grp.Key!, grp,
@@ -360,11 +387,16 @@ public partial class MainViewModel
 
                 ChannelResolved? cr2 = null;
                 if (IsMetadataEnabledInSession.Value)
+                {
                     _channelCache?.TryGetValue(grp.Key!, out cr2);
+                }
 
                 DateTime? mauiEol2 = null;
                 EnsureMauiLifecycleLoaded();
-                if (_mauiLifecycle != null && grp.Key != null && _mauiLifecycle.TryGetValue(grp.Key, out var mdt2)) mauiEol2 = mdt2;
+                if (_mauiLifecycle != null && grp.Key != null && _mauiLifecycle.TryGetValue(grp.Key, out var mdt2))
+                {
+                    mauiEol2 = mdt2;
+                }
 
                 bool latestIsSecRt = cr2?.LatestSecurityRuntime != null && cr2.LatestRuntime == cr2.LatestSecurityRuntime;
                 GroupedRuntimeItems.Add(new ChannelGroup(grp.Key!, grp,
@@ -375,84 +407,16 @@ public partial class MainViewModel
         }
     }
 
-    // --- Update Check ---
-
-    public async Task CheckForUpdatesAsync()
-    {
-        try
-        {
-            var stamp = GetUpdateStampPath();
-            if (File.Exists(stamp))
-            {
-                try
-                {
-                    var txt = await File.ReadAllTextAsync(stamp);
-                    if (DateTimeOffset.TryParse(txt, out var last) && (DateTimeOffset.UtcNow - last) < TimeSpan.FromDays(1))
-                        return;
-                }
-                catch { }
-            }
-
-            var client = new GitHubClient(new ProductHeaderValue("dotuninstall"));
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(4));
-            Release? latestRelease = null;
-            try { latestRelease = await client.Repository.Release.GetLatest("lextudio", "dotuninstall").WaitAsync(cts.Token); }
-            catch { return; }
-            var tag = latestRelease?.TagName;
-            if (string.IsNullOrWhiteSpace(tag)) return;
-            LatestReleaseTag.Value = tag;
-            var current = GetCurrentVersion();
-            if (TryParseVersion(tag, out var latest) && TryParseVersion(current, out var currentV))
-            {
-                if (latest > currentV)
-                {
-                    HasUpdate.Value = true;
-                    UpdateMessage.Value = $"A newer release {latest} is available (current {currentV}).";
-                }
-            }
-            try { await File.WriteAllTextAsync(stamp, DateTimeOffset.UtcNow.ToString("o")); } catch { }
-        }
-        catch { }
-    }
-
-    public async Task ForceCheckForUpdatesAsync()
-    {
-        try
-        {
-            var stamp = GetUpdateStampPath();
-            if (File.Exists(stamp)) try { File.Delete(stamp); } catch { }
-            await CheckForUpdatesAsync();
-            if (!HasUpdate.Value)
-                UpdateMessage.Value = $"You are running the latest version ({GetCurrentVersion()}).";
-        }
-        catch { }
-    }
-
-    public async Task ClearCacheAsync()
-    {
-        if (IsLoading.Value) return;
-        try
-        {
-            var cacheDir = Path.Combine(GetAppDataRootPath(), "cache");
-            if (Directory.Exists(cacheDir)) Directory.Delete(cacheDir, true);
-        }
-        catch { }
-        _channelCache = null;
-        _channelIndexCache = null;
-        _metaCacheTime = DateTime.MinValue;
-        IsUsingCachedLive.Value = false;
-        IsUsingSnapshot.Value = false;
-        StatusMessage.Value = "Cache cleared. Refreshing...";
-        await RefreshAsync();
-    }
-
     // --- Elevation ---
 
     public void DetectElevation()
     {
         try
         {
-            if (!OperatingSystem.IsMacOS() && !OperatingSystem.IsLinux()) return;
+            if (!OperatingSystem.IsMacOS() && !OperatingSystem.IsLinux())
+            {
+                return;
+            }
             // Check if running as root via environment
             var user = Environment.UserName;
             var sudoUser = Environment.GetEnvironmentVariable("SUDO_USER");
@@ -511,9 +475,21 @@ public partial class MainViewModel
     private static bool TryParseVersion(string? text, out NuGetVersion version)
     {
         version = new NuGetVersion(0, 0, 0);
-        if (string.IsNullOrWhiteSpace(text)) return false;
-        if (text.StartsWith('v')) text = text[1..];
-        if (!NuGetVersion.TryParse(text, out var parsed) || parsed is null) return false;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        if (text.StartsWith('v'))
+        {
+            text = text[1..];
+        }
+
+        if (!NuGetVersion.TryParse(text, out var parsed) || parsed is null)
+        {
+            return false;
+        }
+
         version = parsed;
         return true;
     }
@@ -533,10 +509,14 @@ public partial class MainViewModel
         };
         var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
         string so = string.Empty, se = string.Empty;
-        proc.OutputDataReceived += (_, e) => { if (e.Data != null) so += e.Data + "\n"; };
-        proc.ErrorDataReceived += (_, e) => { if (e.Data != null) se += e.Data + "\n"; };
+        proc.OutputDataReceived += (_, e) => { if (e.Data != null) { so += e.Data + "\n"; } };
+        proc.ErrorDataReceived += (_, e) => { if (e.Data != null) { se += e.Data + "\n"; } };
         proc.Exited += (_, _) => tcs.TrySetResult((proc.ExitCode, so, se));
-        if (!proc.Start()) throw new InvalidOperationException($"Cannot start process {fileName}");
+        if (!proc.Start())
+        {
+            throw new InvalidOperationException($"Cannot start process {fileName}");
+        }
+
         proc.BeginOutputReadLine();
         proc.BeginErrorReadLine();
         return await tcs.Task.ConfigureAwait(false);

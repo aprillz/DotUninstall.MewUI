@@ -8,29 +8,21 @@ namespace DotUninstall;
 
 public class SdksView : UserControl
 {
-    private readonly MainViewModel _vm;
-
-    public SdksView(MainViewModel vm)
-    {
-        _vm = vm;
-        Build();
-    }
-
-    protected override Element? OnBuild() =>
+    public SdksView(MainViewModel vm) =>
         new DockPanel()
             .Children(
                 new Label()
                     .Margin(12, 0, 12, 8)
                     .WithTheme((t, c) => c.Foreground(t.Palette.DisabledText))
-                    .BindText(_vm.SdkCount, c => $"Count: {c}").DockTop(),
+                    .BindText(vm.SdkCount, c => $"Count: {c}").DockTop(),
                 new ItemsControl()
                     .CornerRadius(0)
                     .BorderThickness(0)
                     .Background(Color.Transparent)
                     .StackPresenter()
-                    .ItemsSource(ItemsView.Create(_vm.GroupedSdkItems, x => x.Channel))
+                    .ItemsSource(ItemsView.Create(vm.GroupedSdkItems, x => x.Channel))
                     .ItemTemplate(new DelegateTemplate<ChannelGroup>(
-                        build: _ => new ChannelGroupView(_vm),
+                        build: _ => new ChannelGroupView(vm),
                         bind: (view, group, _, _) => ((ChannelGroupView)view).Update(group)
                     ))
             );

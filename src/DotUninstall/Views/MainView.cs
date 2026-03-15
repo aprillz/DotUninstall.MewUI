@@ -7,15 +7,18 @@ namespace DotUninstall;
 
 public class MainView : UserControl
 {
-    public MainView(MainViewModel vm)
-    {
-        Content = new Grid()
-            .Rows("Auto,*")
+    public MainView(MainViewModel vm) =>
+        Content = new DockPanel()
+            .Spacing(8)
             .Children(
-                new BannerView(vm),
+                new BannerView(vm)
+                    .DockTop(),
+
+                new Label()
+                    .DockBottom()
+                    .BindText(vm.StatusMessage, x => x ?? string.Empty),
 
                 new TabControl()
-                    .Row(1)
                     .AutoVerticalScroll()
                     .TabItems(
                         new TabItem()
@@ -29,5 +32,4 @@ public class MainView : UserControl
                             .Content(new SettingsView(vm))
                     )
             );
-    }
 }

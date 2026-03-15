@@ -2,10 +2,10 @@
 **/bin/
 **/obj/
 
-.vs/
 
 ## Publish / artifacts
 .artifacts/
 
 ## User-specific
 *.csproj.user
+.vs/

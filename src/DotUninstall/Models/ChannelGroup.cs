@@ -76,13 +76,24 @@ public sealed class ChannelGroup
         IsSdkGroup = isSdkGroup;
 
         if (!string.IsNullOrWhiteSpace(LatestSdkVersion))
+        {
             IsLatestSdkInstalled = Items.Any(i => i.Type == "sdk" && string.Equals(i.Version, LatestSdkVersion, StringComparison.OrdinalIgnoreCase));
+        }
+
         if (!string.IsNullOrWhiteSpace(LatestRuntimeVersion))
+        {
             IsLatestRuntimeInstalled = Items.Any(i => i.Type == "runtime" && string.Equals(i.Version, LatestRuntimeVersion, StringComparison.OrdinalIgnoreCase));
+        }
+
         if (!string.IsNullOrWhiteSpace(LatestSecuritySdkVersion))
+        {
             IsLatestSecuritySdkInstalled = Items.Any(i => i.Type == "sdk" && string.Equals(i.Version, LatestSecuritySdkVersion, StringComparison.OrdinalIgnoreCase));
+        }
+
         if (!string.IsNullOrWhiteSpace(LatestSecurityRuntimeVersion))
+        {
             IsLatestSecurityRuntimeInstalled = Items.Any(i => i.Type == "runtime" && string.Equals(i.Version, LatestSecurityRuntimeVersion, StringComparison.OrdinalIgnoreCase));
+        }
 
         ChannelDownloadUrl = $"https://dotnet.microsoft.com/download/dotnet/{Channel}";
         LifecycleState = ComputeLifecycleState();
@@ -93,9 +104,21 @@ public sealed class ChannelGroup
     {
         public int Compare(NuGetVersion? x, NuGetVersion? y)
         {
-            if (x is null && y is null) return 0;
-            if (x is null) return 1;
-            if (y is null) return -1;
+            if (x is null && y is null)
+            {
+                return 0;
+            }
+
+            if (x is null)
+            {
+                return 1;
+            }
+
+            if (y is null)
+            {
+                return -1;
+            }
+
             return y.CompareTo(x);
         }
     }
@@ -103,11 +126,18 @@ public sealed class ChannelGroup
     private string ComputeLifecycleState()
     {
         var today = DateTime.UtcNow.Date;
-        if (SupportPhase == "eol" || (EolDate.HasValue && EolDate.Value < today)) return "eol";
+        if (SupportPhase == "eol" || (EolDate.HasValue && EolDate.Value < today))
+        {
+            return "eol";
+        }
+
         if (EolDate.HasValue)
         {
             var days = (EolDate.Value - today).TotalDays;
-            if (days <= 90) return "expiring";
+            if (days <= 90)
+            {
+                return "expiring";
+            }
         }
         return "supported";
     }

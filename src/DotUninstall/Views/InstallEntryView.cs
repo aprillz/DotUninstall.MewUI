@@ -9,7 +9,7 @@ namespace DotUninstall;
 
 public class InstallEntryView : UserControl
 {
-    private readonly MainViewModel _vm;
+    private MainViewModel _vm;
     private Label _versionLabel = null!;
     private Label _displayNameLabel = null!;
     private StackPanel _badges = null!;
@@ -18,11 +18,7 @@ public class InstallEntryView : UserControl
     public InstallEntryView(MainViewModel vm)
     {
         _vm = vm;
-        Build();
-    }
-
-    protected override Element? OnBuild() =>
-        new Grid()
+        Content = new Grid()
             .Columns("*,Auto")
             .Children(
                 new StackPanel()
@@ -56,6 +52,7 @@ public class InstallEntryView : UserControl
                     .Column(1)
                     .IsVisible(false)
             );
+    }
 
     public void Update(DotnetInstallEntry entry)
     {
@@ -65,42 +62,58 @@ public class InstallEntryView : UserControl
         _badges.Clear();
 
         if (entry.ReleaseDateValue != null)
-            _badges.Add(BadgeBuilder.TwoPartBadge("Release", entry.ReleaseDateValue,
+        {
+            _badges.Add(BadgeBuilder.TwoPartBadge(
+                "Release",
+                entry.ReleaseDateValue,
                 () => ThemeColors.BadgeReleaseDateLabel, () => ThemeColors.BadgeReleaseDateValue,
-                infoUrl: entry.ReleaseNotesUrl));
+                entry.ReleaseNotesUrl));
+        }
 
         if (entry.StageDisplay != null)
-            _badges.Add(BadgeBuilder.TwoPartBadge("Stage", entry.StageDisplay,
+        {
+            _badges.Add(BadgeBuilder.TwoPartBadge(
+                "Stage", entry.StageDisplay,
                 () => ThemeColors.BadgeStageLabel, () => ThemeColors.BadgeStageValue));
+        }
 
         if (_vm.IsMetadataEnabledInSession.Value && entry.SecurityStatus != SecurityStatus.None)
         {
-            var secValue = entry.SecurityStatus switch
-            {
-                SecurityStatus.SecurityPatch or SecurityStatus.Patched => "Yes",
-                _ => "No"
-            };
-            _badges.Add(BadgeBuilder.TwoPartBadge("Secure", secValue,
+            var secValue = entry.SecurityStatus is SecurityStatus.SecurityPatch or SecurityStatus.Patched ? "Yes" : "No";
+            _badges.Add(BadgeBuilder.TwoPartBadge(
+                "Secure", secValue,
                 () => ThemeColors.BadgeSecurityLabel, () => ThemeColors.BadgeSecurityValue));
         }
 
         if (entry.IsOutOfSupport)
-            _badges.Add(BadgeBuilder.TwoPartBadge("EOL", "Build",
+        {
+            _badges.Add(BadgeBuilder.TwoPartBadge(
+                "EOL", "Build",
                 () => ThemeColors.BadgeEolLabel, () => ThemeColors.BadgeEolValue));
+        }
 
-        _badges.Add(BadgeBuilder.TwoPartBadge("Arch", entry.Architecture,
+        _badges.Add(BadgeBuilder.TwoPartBadge(
+            "Arch", entry.Architecture,
             () => ThemeColors.BadgeArchLabel, () => ThemeColors.BadgeArchValue));
 
         if (entry.SubType != null)
-            _badges.Add(BadgeBuilder.TwoPartBadge("Type", entry.SubType,
+        {
+            _badges.Add(BadgeBuilder.TwoPartBadge(
+                "Type", entry.SubType,
                 () => ThemeColors.BadgeSubTypeLabel, () => ThemeColors.BadgeSubTypeValue));
+        }
 
         if (!string.IsNullOrWhiteSpace(entry.Reason))
+        {
             _badges.Add(BadgeBuilder.SingleBadge(entry.Reason, () => ThemeColors.BadgeReasonBg));
+        }
 
         if (entry.CanUninstall)
-            _badges.Add(BadgeBuilder.TwoPartBadge("State", "Removable",
+        {
+            _badges.Add(BadgeBuilder.TwoPartBadge(
+                "State", "Removable",
                 () => ThemeColors.BadgeStateLabel, () => ThemeColors.BadgeStateValue));
+        }
 
         _uninstallButton.IsVisible = entry.CanUninstall;
     }

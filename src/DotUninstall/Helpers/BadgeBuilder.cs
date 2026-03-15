@@ -31,11 +31,14 @@ M12,20
         string label, string? value,
         Func<Color> labelBg, Func<Color> valueBg,
         string? infoUrl = null,
-        string? toolTip = null,
-        double fontSize = DefaultFontSize)
+        string? toolTip = null)
     {
+        var fontSize = DefaultFontSize;
+
         if (string.IsNullOrWhiteSpace(value))
+        {
             return new Border().Width(0).Height(0);
+        }
 
         var labelPart = new Border()
             .MinHeight(20)
@@ -103,7 +106,9 @@ M12,20
     public static FrameworkElement SingleBadge(string? text, Func<Color> background, double fontSize = DefaultFontSize)
     {
         if (string.IsNullOrWhiteSpace(text))
+        {
             return new Border().Width(0).Height(0);
+        }
 
         return new Border()
             .CornerRadius(4)
