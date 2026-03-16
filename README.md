@@ -8,6 +8,9 @@ This project provides a lightweight GUI for managing installed .NET SDKs and run
 
 The goal of this port is to explore how existing .NET GUI utilities can be implemented with **MewUI and NativeAOT-friendly architecture**, while keeping the application small and dependency-light.
 
+> [!IMPORTANT]  
+> Includes examples of configuration for multi-platform NativeAOT builds in a single project (project file, startup code, and publish profiles).
+
 ![](assets/screenshot-1.png)
 ![](assets/screenshot-2.png)
 ![](assets/screenshot-3.png)
