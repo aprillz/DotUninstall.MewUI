@@ -14,7 +14,12 @@ The goal of this port is to explore how existing .NET GUI utilities can be imple
 ![](assets/screenshot-1.png)
 ![](assets/screenshot-2.png)
 ![](assets/screenshot-3.png)
+ 
+![](assets/screenshot-4.png)
 
+The output size is 10 MB without JSON resources, with no runtime dependency required.
+
+---
 ## Original Project
 
 Original project:
